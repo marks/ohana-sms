@@ -1,0 +1,13 @@
+ohana:
+  base_url: "http://ohanapi.herokuapp.com/api"
+  api_key: "GET YOURS AT http://ohanapi.herokuapp.com"
+tropo_tts:
+  voice: "allison"
+  rate: "default"
+  timeout_for_VOICE: 45
+  timeout_for_TEXT: 180
+  interdigitTimeout_for_VOICE: 10
+  interdigitTimeout_for_TEXT: 180
+google_analytics:
+  tracking_id: "UA-XXXXXXXXX-X"
+  domain: "domain.com"
