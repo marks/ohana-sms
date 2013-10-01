@@ -32,12 +32,9 @@ This app uses data from the [Ohana API](http://www.ohanaapi.org/).
 Screenshots and Voice Recordings
 --------------------------------
 [A recording of a voice session](docs/voice_recording.m4a)
-<table>
-  <tr>
-    <td>![sms demo - start view](docs/sms_1_start.png "SMS Example - Start of conversation")</td>
-    <td>![sms demo - details view](docs/sms_2_details.png "SMS Example - End of conversation")</td>
-  </tr>
-</table>
+
+| ![sms demo - start view](docs/sms_1_start.png "SMS Example - Start of conversation") | ![sms demo - details view](docs/sms_2_details.png "SMS Example - End of conversation") | 
+
 
 
 Current Limitations
