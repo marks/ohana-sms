@@ -20,6 +20,7 @@ Ohanakapa.configure do |c|
   c.api_token = settings.ohana["api_key"]
 end
 
+puts settings.ohana.inspect
 
 before do
   G.page_view(request.path.to_s,request.path.to_s) if defined?(G)
@@ -87,117 +88,105 @@ post '/process_zip.json' do
       end
     end
 
-    t.say say_str("You entered #{session[:zip]}")
+    # debug
+    # t.say say_str("You entered #{session[:zip]}")
+    session[:kind] = "food" # hard coded for now, will abstract later
+    session[:data] = Ohanakapa.search("search", :keyword => session[:kind], :location => session[:zip])
+    G.event("Location", "#{session[:kind]}LookupByZip", session[:zip].to_s) if defined?(G)
+    if session[:data].size > 0
+      session[:data] = session[:data][0..8] if session[:data].size > 9 # limit to first 9 results
+      t.say say_str("Here are #{session[:data].size} resources in your area. Press or key in the resource number you want more information about.")
+      # Add an 'ask' to the JSON response and list the resources to the user in the form of a question. The selected opportunity will be handled in the next route.
+      t.ask :name => 'selection', :bargein => true, :timeout => settings.tropo_tts["timeout_for_#{session[:channel]}"], :interdigitTimeout => settings.tropo_tts["interdigitTimeout_for_#{session[:channel]}"],
+          :attempts => 3,
+          :say => [{:event => "nomatch:1", :value => say_str("That wasn't a one-digit resource number. Here are your choices: ")},
+                   {:value => say_str(construct_list_of_items,"-10%")}], :choices => { :value => "[1 DIGITS]"}
+    else
+      # Add a 'say' to the JSON response and hangip the call
+      t.say say_str("Sorry, but we did not find any resources found in that zip code.")
+      t.hangup
+    end
 
-    # # Fetch JSON output for the eldercare.gov API
-    # # begin
-    #   # Get data from the eldercare.gov API
-    #   zip_response = session[:client].request :search_by_zip do
-    #     soap.body = { asZipCode: session[:zip], asToken: session[:client_token] }
-    #   end
-    #   session[:data] = zip_response.body[:search_by_zip_response][:search_by_zip_result][:diffgram][:zip_code_data][:table1]
-    #   G.event("Location", "LookupByZip", session[:zip].to_s) if defined?(G)
-
-    #   if session[:data].size > 0
-    #     session[:data] = session[:data][0..8] if session[:data].size > 9 # limit to 9 results
-    #     t.say say_str("Here are #{session[:data].size} resources in your area. Press the resource number you want more information about.")
-    #     # Add an 'ask' to the JSON response and list the resources to the user in the form of a question. The selected opportunity will be handled in the next route.
-    #     t.ask :name => 'selection', :bargein => true, :timeout => settings.tropo_tts["timeout_for_#{session[:channel]}"], :interdigitTimeout => settings.tropo_tts["interdigitTimeout_for_#{session[:channel]}"],
-    #         :attempts => 3,
-    #         :say => [{:event => "nomatch:1", :value => say_str("That wasn't a one-digit resource number. Here are your choices: ")},
-    #                  {:value => say_str(construct_list_of_items,"-10%")}], :choices => { :value => "[1 DIGITS]"}
-    #   else
-    #     # Add a 'say' to the JSON response and hangip the call
-    #     t.say say_str("Sorry, but we did not find any eldercare resources found in that zip code.")
-    #     t.hangup
-    #   end
-    # # rescue => e
-    # #   # Add a 'say' to the JSON response
-    # #   t.say say_str("It looks like something went awry with our data source. Please try again later.")
-    # #   t.hangup
-    # # end
-
-
-    # t.on  :event => 'continue', :next => '/process_selection.json'
+    t.on  :event => 'continue', :next => '/process_selection.json'
     t.on  :event => 'hangup', :next => '/hangup.json'
 
   t.response
 end
 
-# # The next step in the session is posted to this resource when the 'ask' is completed in 'process_zip.json'
-# post '/process_selection.json' do
-#   v = Tropo::Generator.parse request.env["rack.input"].read
-#   t = Tropo::Generator.new
-#     t.voice = settings.tropo_tts["voice"]
-#     # If we have a valid response from the last ask, do this section
-#     if v[:result][:actions][:selection][:value]
-#       G.event("EldercareLocation", "ItemDetails", "ItemNumber", v[:result][:actions][:selection][:value].to_s, true) if defined?(G)
+# The next step in the session is posted to this resource when the 'ask' is completed in 'process_zip.json'
+post '/process_selection.json' do
+  v = Tropo::Generator.parse request.env["rack.input"].read
+  t = Tropo::Generator.new
+    t.voice = settings.tropo_tts["voice"]
+    # If we have a valid response from the last ask, do this section
+    if v[:result][:actions][:selection][:value]
+      G.event("LocationDetails", "ItemDetails", "ItemNumber", v[:result][:actions][:selection][:value].to_s, true) if defined?(G)
 
-#       item = session[:data][v[:result][:actions][:selection][:value].to_i-1]
-#       session[:chosen_item_say_string_VOICE] = construct_details_of_item(item,"VOICE")
-#       session[:chosen_item_say_string_TEXT] = construct_details_of_item(item,"TEXT")
+      item = session[:data][v[:result][:actions][:selection][:value].to_i-1]
+      session[:chosen_item_say_string_VOICE] = construct_details_of_item(item,"VOICE")
+      session[:chosen_item_say_string_TEXT] = construct_details_of_item(item,"TEXT")
 
-#       if session[:channel] == "VOICE"
-#         t.say say_str(session[:chosen_item_say_string_VOICE], "-10%")
-#       else
-#         t.say session[:chosen_item_say_string_TEXT]
-#       end
+      if session[:channel] == "VOICE"
+        t.say say_str(session[:chosen_item_say_string_VOICE], "-10%")
+      else
+        t.say session[:chosen_item_say_string_TEXT]
+      end
 
-#       # If the user is using voice, ask them if they would like an SMS sent to them
-#       if session[:channel] == "VOICE"
-#         t.ask :name => 'send_sms', :bargein => true, :timeout => settings.tropo_tts["timeout_for_#{session[:channel]}"], :interdigitTimeout => settings.tropo_tts["interdigitTimeout_for_#{session[:channel]}"],
-#               :attempts => 3,
-#               :say => [{:event => "nomatch:1 nomatch:2 nomatch:3", :value => say_str("That wasn't a valid answer.")},
-#                      {:value => say_str("Would you like to have a text message sent to you with this information? Press 1 or say 'yes' to receive a text message; press 2 or say 'no' to conclude this session.")}],
-#               :choices => { :value => "true(1,yes), false(2,no)"}
-#         next_url = '/send_text_message.json'
-#       end
-#     else
-#       t.say say_str("Sorry, but I could not find a resource with that value. Please try again.")
-#       t.hangup
-#     end
+      # If the user is using voice, ask them if they would like an SMS sent to them
+      if session[:channel] == "VOICE"
+        t.ask :name => 'send_sms', :bargein => true, :timeout => settings.tropo_tts["timeout_for_#{session[:channel]}"], :interdigitTimeout => settings.tropo_tts["interdigitTimeout_for_#{session[:channel]}"],
+              :attempts => 3,
+              :say => [{:event => "nomatch:1 nomatch:2 nomatch:3", :value => say_str("That wasn't a valid answer.")},
+                     {:value => say_str("Would you like to have a text message sent to you with this information? Press 1 or say 'yes' to receive a text message; press 2 or say 'no' to conclude this session.")}],
+              :choices => { :value => "true(1,yes), false(2,no)"}
+        next_url = '/send_text_message.json'
+      end
+    else
+      t.say say_str("Sorry, but I could not find a resource with that value. Please try again.")
+      t.hangup
+    end
 
-#     next_url = '/goodbye.json' if next_url.nil?
-#     t.on  :event => 'continue', :next => next_url
-#     t.on  :event => 'hangup', :next => '/hangup.json'
+    next_url = '/goodbye.json' if next_url.nil?
+    t.on  :event => 'continue', :next => next_url
+    t.on  :event => 'hangup', :next => '/hangup.json'
 
-#   t.response
-# end
+  t.response
+end
 
-# # The next step in the session is posted to this resource when the 'ask' is completed in 'process_selection.json'
-# post '/send_text_message.json' do
-#   # Fetch the HTTP Body (the session) of the POST and parse it into a native Ruby Hash object
-#   v = Tropo::Generator.parse request.env["rack.input"].read
+# The next step in the session is posted to this resource when the 'ask' is completed in 'process_selection.json'
+post '/send_text_message.json' do
+  # Fetch the HTTP Body (the session) of the POST and parse it into a native Ruby Hash object
+  v = Tropo::Generator.parse request.env["rack.input"].read
 
-#   # Create a Tropo::Generator object which is used to build the resulting JSON response
-#   t = Tropo::Generator.new
-#     t.voice = settings.tropo_tts["voice"]
-#     if v[:result][:actions][:number_to_text] # The caller provided a phone # to text message
-#       t.message({
-#         :to => v[:result][:actions][:number_to_text][:value],
-#         :network => "SMS",
-#         :say => {:value => session[:say_string_TEXT]
-#       }})
-#       t.say say_str("Your text message is on its way.")
-#     else # We dont have a number, so either ask for it if they selected to send a text message, or send to goodbye.json
-#       if v[:result][:actions][:send_sms][:value] == "true"
-#         t.ask :name => 'number_to_text', :bargein => true, :timeout => settings.tropo_tts["timeout_for_#{session[:channel]}"], :interdigitTimeout => settings.tropo_tts["interdigitTimeout_for_#{session[:channel]}"],
-#               :required => false, :attempts => 3,
-#               :say => [{:event => "timeout", :value => say_str("Sorry, I did not hear anything.")},
-#                      {:event => "nomatch:1 nomatch:2 nomatch:3", :value => say_str("Oops, that wasn't a 10-digit number.")},
-#                      {:value => say_str("What 10-digit phone number would you like to send the information to?")}],
-#                       :choices => { :value => "[10 DIGITS]"}
-#         next_url = '/send_text_message.json'
-#       end # No need for an else, send them off to /goodbye.json
-#     end
+  # Create a Tropo::Generator object which is used to build the resulting JSON response
+  t = Tropo::Generator.new
+    t.voice = settings.tropo_tts["voice"]
+    if v[:result][:actions][:number_to_text] # The caller provided a phone # to text message
+      t.message({
+        :to => v[:result][:actions][:number_to_text][:value],
+        :network => "SMS",
+        :say => {:value => session[:say_string_TEXT]
+      }})
+      t.say say_str("Your text message is on its way.")
+    else # We dont have a number, so either ask for it if they selected to send a text message, or send to goodbye.json
+      if v[:result][:actions][:send_sms][:value] == "true"
+        t.ask :name => 'number_to_text', :bargein => true, :timeout => settings.tropo_tts["timeout_for_#{session[:channel]}"], :interdigitTimeout => settings.tropo_tts["interdigitTimeout_for_#{session[:channel]}"],
+              :required => false, :attempts => 3,
+              :say => [{:event => "timeout", :value => say_str("Sorry, I did not hear anything.")},
+                     {:event => "nomatch:1 nomatch:2 nomatch:3", :value => say_str("Oops, that wasn't a 10-digit number.")},
+                     {:value => say_str("What 10-digit phone number would you like to send the information to?")}],
+                      :choices => { :value => "[10 DIGITS]"}
+        next_url = '/send_text_message.json'
+      end # No need for an else, send them off to /goodbye.json
+    end
 
-#     next_url = '/goodbye.json' if next_url.nil?
-#     t.on  :event => 'continue', :next => next_url
-#     t.on  :event => 'hangup', :next => '/hangup.json'
+    next_url = '/goodbye.json' if next_url.nil?
+    t.on  :event => 'continue', :next => next_url
+    t.on  :event => 'hangup', :next => '/hangup.json'
 
-#   # Return the JSON response via HTTP to Tropo
-#   t.response
-# end
+  # Return the JSON response via HTTP to Tropo
+  t.response
+end
 
 # The next step in the session is posted to this resource when the 'ask' is completed in 'send_text_message.json'
 post '/goodbye.json' do

@@ -26,6 +26,8 @@ Demonstration
 Data Source
 -----------
 This app uses data from the [Ohana API](http://www.ohanaapi.org/).
+- HTTP API Documentation at http://ohanapi.herokuapp.com/api/docs
+- This app uses the Ruby library at https://github.com/codeforamerica/ohanakapa-ruby/
 
 Steps to recreate
 -----------------

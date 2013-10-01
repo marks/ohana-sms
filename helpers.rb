@@ -11,9 +11,9 @@ def construct_list_of_items
   say_array = []
   session[:data].each_with_index do |item,i|
     if session[:channel] == "VOICE"
-      say_array << "Resource ##{i+1}: #{item[:tab_name]} at #{item[:name]}"
+      say_array << "Resource ##{i+1}: #{item[:kind]} at #{item[:name]}"
     else
-      say_array << "##{i+1}: #{item[:tab_name]} @ #{item[:name]}"
+      say_array << "##{i+1}: #{item[:kind]} @ #{item[:name]}"
     end
   end
   session[:channel] == "VOICE" ? say_array.join(", <break />") : say_array.join(", ")
@@ -22,40 +22,32 @@ end
 def construct_details_of_item(item,channel = session[:channel])
   details = []
 
-  details << "This is detailed information about #{item[:tab_name]} at #{item[:tab_name]}: "
-  details << "Phone number for information: #{"<say-as interpret-as='vxml:phone'>" if session[:channel] == "VOICE"}#{item[:info_phone]}#{"</say-as>" if session[:channel] == "VOICE"}" unless item[:info_phone].nil?
-  details << "TTY Phone number: #{"<say-as interpret-as='vxml:phone'>" if session[:channel] == "VOICE"}#{item[:tty_phone]}#{"</say-as>" if session[:channel] == "VOICE"}" unless item[:tty_phone].nil?
+  details << "This is detailed information about #{item[:name]} at #{item[:name]}: "
+  details << item[:short_desc] unless item[:short_desc].nil?
+  details << "Phone number: #{"<say-as interpret-as='vxml:phone'>" if session[:channel] == "VOICE"}#{item[:phones][0][:number]}#{"</say-as>" if session[:channel] == "VOICE"}" unless item[:phones].empty?
   # details << "Email address: #{item[:e_mail_add]}" unless item[:e_mail_add].nil?
 
   full_address = []
-  full_address << item[:address1] unless item[:address1].nil?
-  full_address << item[:address2] unless item[:address2].nil?
-  full_address << item[:city] unless item[:city].nil?
-  full_address << item[:state_code] unless item[:state_code].nil?
+  unless item[:address].nil?
+    full_address << item[:address][:street] unless item[:address][:street].nil?
+    full_address << item[:address][:city] unless item[:address][:city].nil?
+    full_address << item[:address][:state] unless item[:address][:state].nil?
 
-  if channel == "VOICE"
-    full_address << "<say-as interpret-as='vxml:digits'>#{item[:zip_code]}</say-as>" unless item[:zip_code].nil?
-  else
-    full_address << item[:zip_code] unless item[:zip_code].nil?
+    if channel == "VOICE"
+      full_address << "<say-as interpret-as='vxml:digits'>#{item[:address][:zip]}</say-as>" unless item[:address][:zip].nil?
+    else
+      full_address << item[:address][:zip] unless item[:address][:zip].nil?
+    end
+    full_address_str = full_address.join(", ")
   end
-  full_address_str = full_address.join(", ")
 
-  if item[:url]
-    tinyurl = shorten_url(URI.unescape(item[:url]))
+  unless item[:urls].empty?
+    tinyurl = shorten_url(URI.unescape(item[:urls][0]))
     if channel == "VOICE"
       details << "Official web page: #{readable_tinyurl(tinyurl)}"
     else
       details << "Official web page: #{tinyurl}"
     end
-  end
-
-  google_maps_url = shorten_url("http://maps.google.com/maps?f=q&source=s_q&hl=en&geocode=&q="+URI.escape(full_address_str))
-  if channel == "VOICE"
-    details << "This resource is located at: #{full_address.join(" ,, ")}"
-    details << "Google map available at #{readable_tinyurl(google_maps_url)}"
-  else
-    details << "Address: #{full_address_str}"
-    details << "Google map available at #{google_maps_url}"
   end
 
   channel == "VOICE" ? details.join(" <break/><break/> ") : details.join(" | ")
