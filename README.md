@@ -21,11 +21,6 @@ Demonstration
     <td>sip:XXXXXXXXXX@sip.tropo.com</td>
     <td>Voice only</td>
   </tr>
-  <tr>
-    <th>Jabber</th>
-    <td>TBD</td>
-    <td>Text only</td>
-  </tr>
 </table>
 
 Data Source
