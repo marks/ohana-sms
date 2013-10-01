@@ -46,6 +46,7 @@ Current Limitations
 - User is only prompted for a location and only a 5-digit zip code is acceptable.
 - User is not asked for what kind of service they are looking for. "food" is hardcoded in.
   - It is easy to ask SMS users what "kind" they are looking for or even let them include free text queries. This is not the case for phone users. We can say "press or say 1 for food, 2 for shelter, etc.." or use voice recognition for a set vocabulary but then we must explain the available words, etc.
+- User can only select from the first 9 search results
 
 TODO
 ----
