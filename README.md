@@ -34,8 +34,8 @@ Screenshots and Voice Recordings
 
 <table>
   <tr>
-    <td><a href="/marks/ohana-sms/blob/master/docs/sms_1_start.png" target="_blank"><img src="/marks/ohana-sms/raw/master/docs/sms_1_start.png" alt="sms demo - start view" title="SMS Example - Start of conversation" style="max-width:40%;"></a></td>
-    <td><a href="/marks/ohana-sms/blob/master/docs/sms_2_details.png" target="_blank"><img src="/marks/ohana-sms/raw/master/docs/sms_2_details.png" alt="sms demo - detail view" title="SMS Example - End of conversation" style="max-width:40%;"></a></td>
+    <td><a href="docs/sms_1_start.png" target="_blank"><img src="docs/sms_1_start.png" alt="sms demo - start view" title="SMS Example - Start of conversation" style="max-width:40%;"></a></td>
+    <td><a href="docs/sms_2_details.png" target="_blank"><img src="docs/sms_2_details.png" alt="sms demo - detail view" title="SMS Example - End of conversation" style="max-width:40%;"></a></td>
   </tr>
 </table>
 
