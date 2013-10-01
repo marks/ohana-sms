@@ -13,12 +13,12 @@ Demonstration
   </tr>
   <tr>
     <th>Call/SMS</th>
-    <td>(XXX) XXX-XXXX</td>
+    <td>+1 650-397-2418</td>
     <td>Both</td>
   </tr>
   <tr>
     <th>SIP</th>
-    <td>sip:XXXXXXXXXX@sip.tropo.com</td>
+    <td>sip:9991432720@sip.tropo.com</td>
     <td>Voice only</td>
   </tr>
 </table>
@@ -38,7 +38,12 @@ Steps to recreate
   * `git clone http://github.com/marks/ohana-sms.git --depth 1`
   * `cd ohana-sms`
 
-3. Edit the `config.example.yml` to use your own API and other creds and rename the file to `config.yml`
+3. Edit the `config.yml` to use suit your preferences and make sure following ENV are set (Google Analytics ones and are optional):
+  ```
+    OHANA_API_KEY=your_api_key
+    GOOGLE_ANALYTICS_DOMAIN=yourdomain.com
+    GOOGLE_ANALYTICS_ID=UA-XXXXXXXX-XX
+  ```
 
 4. Back at the command line, issue:
   * `heroku create`

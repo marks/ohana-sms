@@ -13,14 +13,12 @@ require './helpers.rb'
 use Rack::Session::Pool
 
 # Setup Gabba, a server-side Google Analytics gem
-G = Gabba::Gabba.new(settings.google_analytics["tracking_id"], settings.google_analytics["domain"]) if defined?(settings.google_analytics)
+G = Gabba::Gabba.new(ENV["GOOGLE_ANALYTICS_ID"], ENV["GOOGLE_ANALYTICS_DOMAIN"]) unless ENV["GOOGLE_ANALYTICS_DOMAIN"].nil?
 
 # Setup Ohanakapa, the Ruby wrapper for the Ohana API
 Ohanakapa.configure do |c|
-  c.api_token = settings.ohana["api_key"]
+  c.api_token = ENV["OHANA_API_KEY"]
 end
-
-puts settings.ohana.inspect
 
 before do
   G.page_view(request.path.to_s,request.path.to_s) if defined?(G)

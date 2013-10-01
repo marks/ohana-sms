@@ -1,5 +1,4 @@
-config.yml
-
+.env
 *.gem
 *.rbc
 .bundle
