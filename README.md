@@ -1,7 +1,7 @@
 ohana-sms
 =========
 
-A project to create an SMS interface for the Ohana API, powered by Tropo
+A project to create an SMS interface for the Ohana API, powered by Tropo. A civic hacking project to give back to the community by [@Skram](http://twitter.com/skram) of [Social Health Insights](http://socialhealthinsights.com).
 
 Demonstration
 -------------
@@ -28,6 +28,17 @@ Data Source
 This app uses data from the [Ohana API](http://www.ohanaapi.org/).
 - HTTP API Documentation at http://ohanapi.herokuapp.com/api/docs
 - This app uses the Ruby library at https://github.com/codeforamerica/ohanakapa-ruby/
+
+Current Limitations
+-------------------
+- User is only prompted for a location and only a 5-digit zip code is acceptable.
+- User is not asked for what kind of service they are looking for. "food" is hardcoded in.
+  - It is easy to ask SMS users what "kind" they are looking for or even let them include free text queries. This is not the case for phone users. We can say "press or say 1 for food, 2 for shelter, etc.." or use voice recognition for a set vocabulary but then we must explain the available words, etc.
+
+TODO
+----
+- Add information for contributing to this repo (it's very much welcomed)
+- Add screenshots and/or recordings to demo functionality
 
 Steps to recreate
 -----------------
