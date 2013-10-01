@@ -29,6 +29,12 @@ This app uses data from the [Ohana API](http://www.ohanaapi.org/).
 - HTTP API Documentation at http://ohanapi.herokuapp.com/api/docs
 - This app uses the Ruby library at https://github.com/codeforamerica/ohanakapa-ruby/
 
+Screenshots and Voice Recordings
+--------------------------------
+![sms demo - start view](docs/sms_1_start.png "SMS Example - Start of conversation")
+![sms demo - details view](docs/sms_2_details.png "SMS Example - End of conversation")
+[A recording of a voice session](docs/voice_recording.m4a)
+
 Current Limitations
 -------------------
 - User is only prompted for a location and only a 5-digit zip code is acceptable.
