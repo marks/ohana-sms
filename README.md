@@ -31,11 +31,15 @@ This app uses data from the [Ohana API](http://www.ohanaapi.org/).
 
 Screenshots and Voice Recordings
 --------------------------------
+
+<table>
+  <tr>
+    <td><a href="/marks/ohana-sms/blob/master/docs/sms_1_start.png" target="_blank"><img src="/marks/ohana-sms/raw/master/docs/sms_1_start.png" alt="sms demo - start view" title="SMS Example - Start of conversation" style="max-width:40%;"></a></td>
+    <td><a href="/marks/ohana-sms/blob/master/docs/sms_2_details.png" target="_blank"><img src="/marks/ohana-sms/raw/master/docs/sms_2_details.png" alt="sms demo - detail view" title="SMS Example - End of conversation" style="max-width:40%;"></a></td>
+  </tr>
+</table>
+
 [A recording of a voice session](docs/voice_recording.m4a)
-
-| ![sms demo - start view](docs/sms_1_start.png "SMS Example - Start of conversation") | ![sms demo - details view](docs/sms_2_details.png "SMS Example - End of conversation") | 
-
-
 
 Current Limitations
 -------------------
