@@ -1,7 +1,7 @@
 ohana-sms
 =========
 
-A project to create an SMS interface for the Ohana API, powered by Tropo. A civic hacking project to give back to the community by [@Skram](http://twitter.com/skram) of [Social Health Insights](http://socialhealthinsights.com).
+A project to create an SMS interface for the Ohana API. SMS, Voice, and SIP support through [Tropo](http://tropo.com), web app hosted on [Heroku](http://heroku.com). A civic hacking project to give back to the community by [@Skram](http://twitter.com/skram) of [Social Health Insights](http://socialhealthinsights.com).
 
 Demonstration
 -------------
