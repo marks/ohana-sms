@@ -1,5 +1,4 @@
 ohana:
-  base_url: "http://ohanapi.herokuapp.com/api"
   api_key: "GET YOURS AT http://ohanapi.herokuapp.com"
 tropo_tts:
   voice: "allison"
